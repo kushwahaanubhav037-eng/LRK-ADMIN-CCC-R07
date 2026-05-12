@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>R07 - Admin Control | LRK Institute</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --dark: #050505; --red: #ff0000; --neon: #ff4d4d; }
+        body { font-family: 'Poppins', sans-serif; background: var(--dark); color: white; padding: 20px; }
+        .card { background: #111; padding: 30px; border-radius: 15px; border: 2px solid var(--red); box-shadow: 0 0 30px rgba(255,0,0,0.3); max-width: 900px; margin: auto; }
+        h2 { text-align: center; color: var(--red); letter-spacing: 3px; font-family: 'Orbitron', sans-serif; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .full { grid-column: 1/-1; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #333; border-radius: 8px; background: #000; color: #fff; }
+        input:focus { border-color: var(--red); outline: none; }
+        .btn { padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; background: var(--red); width: 100%; margin-top: 15px; text-transform: uppercase; }
+        .btn:hover { background: #cc0000; box-shadow: 0 0 20px var(--red); }
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        th, td { padding: 12px; border-bottom: 1px solid #222; text-align: left; }
+        th { color: var(--red); }
+        .edit-btn { color: #00ff00; cursor: pointer; margin-right: 15px; background: none; border: none; }
+        .del-btn { color: var(--red); cursor: pointer; background: none; border: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>LRK INSTITUTE ADMIN</h2>
+        <input type="hidden" id="editId">
+        <div class="grid">
+            <div class="full"><textarea id="qText" rows="2" placeholder="Question in English..."></textarea></div>
+            <input type="text" id="opA" placeholder="Option A">
+            <input type="text" id="opB" placeholder="Option B">
+            <input type="text" id="opC" placeholder="Option C">
+            <input type="text" id="opD" placeholder="Option D">
+            <div class="full"><select id="ans"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>
+        </div>
+        <button class="btn" onclick="saveQ()" id="mainBtn">Save Question</button>
+    </div>
+    <div id="qList" style="max-width:900px; margin:auto;"></div>
+
+    <script>
+        function saveQ() {
+            let qs = JSON.parse(localStorage.getItem('ccc_qs')) || [];
+            const id = document.getElementById('editId').value || Date.now().toString();
+            const data = { id, q: document.getElementById('qText').value, a: document.getElementById('opA').value, b: document.getElementById('opB').value, c: document.getElementById('opC').value, d: document.getElementById('opD').value, ans: document.getElementById('ans').value };
+            const idx = qs.findIndex(x => x.id == id);
+            if(idx > -1) qs[idx] = data; else qs.push(data);
+            localStorage.setItem('ccc_qs', JSON.stringify(qs));
+            location.reload();
+        }
+        function render() {
+            const qs = JSON.parse(localStorage.getItem('ccc_qs')) || [];
+            let html = `<table><tr><th>#</th><th>Question</th><th>Action</th></tr>`;
+            qs.forEach((x, i) => {
+                html += `<tr><td>${i+1}</td><td>${x.q}</td><td>
+                <button class="edit-btn" onclick="editQ('${x.id}')"><i class="fas fa-edit"></i></button>
+                <button class="del-btn" onclick="delQ('${x.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
+            document.getElementById('qList').innerHTML = html + `</table>`;
+        }
+        function editQ(id) {
+            const x = JSON.parse(localStorage.getItem('ccc_qs')).find(q => q.id == id);
+            document.getElementById('qText').value = x.q; document.getElementById('opA').value = x.a;
+            document.getElementById('opB').value = x.b; document.getElementById('opC').value = x.c;
+            document.getElementById('opD').value = x.d; document.getElementById('ans').value = x.ans;
+            document.getElementById('editId').value = x.id; document.getElementById('mainBtn').innerText = "Update Question";
+            window.scrollTo(0,0);
+        }
+        function delQ(id) { if(confirm("Delete?")) { let qs = JSON.parse(localStorage.getItem('ccc_qs')).filter(x => x.id != id); localStorage.setItem('ccc_qs', JSON.stringify(qs)); render(); } }
+        render();
+    </script>
+</body>
+</html>
