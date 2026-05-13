@@ -3,111 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <title>R07 ELITE ADMIN | LRK INSTITUTE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --red: #ff0000; --dark: #050505; --glow: rgba(255, 0, 0, 0.6); }
-        body { 
-            margin: 0; background: var(--dark); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden; position: relative;
-        }
-        /* Animated Background */
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(45deg, #000 25%, #0a0000 50%, #000 75%);
-            background-size: 400% 400%; animation: matrix 15s infinite; z-index: -1;
-        }
-        @keyframes matrix { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        :root { --red: #ff0000; --dark: #050505; --neon: #ff4d4d; }
+        body { background: var(--dark); color: white; font-family: 'Poppins', sans-serif; padding: 20px; margin: 0; }
+        
+        /* Level Badge Style */
+        .level-badge { background: linear-gradient(45deg, #ff0000, #550000); padding: 10px 20px; border-radius: 50px; border: 2px solid gold; font-weight: bold; display: inline-block; margin-bottom: 20px; box-shadow: 0 0 15px gold; }
 
-        .admin-card {
-            max-width: 850px; margin: 40px auto; background: rgba(15, 15, 15, 0.9);
-            border: 2px solid var(--red); border-radius: 20px; padding: 40px;
-            box-shadow: 0 0 40px var(--glow); backdrop-filter: blur(10px);
-        }
-        h1 { text-align: center; color: var(--red); text-transform: uppercase; letter-spacing: 5px; text-shadow: 0 0 10px var(--red); margin-bottom: 5px; }
-        .inst-name { text-align: center; color: white; font-size: 14px; opacity: 0.8; margin-bottom: 30px; letter-spacing: 2px; }
+        .card { background: #111; padding: 30px; border-radius: 15px; border: 2px solid var(--red); box-shadow: 0 0 30px rgba(255,0,0,0.3); max-width: 900px; margin: auto; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .full { grid-column: 1/-1; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #333; border-radius: 8px; background: #000; color: #fff; box-sizing: border-box; }
+        .btn { padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; background: var(--red); width: 100%; margin-top: 15px; text-transform: uppercase; }
         
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .full { grid-column: span 2; }
-        
-        textarea, input, select {
-            width: 100%; padding: 15px; background: #000; border: 1px solid #333;
-            color: #fff; border-radius: 10px; font-size: 16px; outline: none; transition: 0.4s;
-        }
-        textarea:focus, input:focus { border-color: var(--red); box-shadow: 0 0 15px var(--red); }
-        
-        .btn-deploy {
-            width: 100%; padding: 18px; margin-top: 25px; border: none; border-radius: 12px;
-            background: var(--red); color: white; font-weight: bold; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 3px; font-size: 18px; transition: 0.3s;
-        }
-        .btn-deploy:hover { transform: translateY(-3px); box-shadow: 0 0 30px var(--red); }
-
-        table { width: 100%; margin-top: 40px; border-collapse: collapse; border-radius: 10px; overflow: hidden; }
-        th { background: var(--red); color: white; padding: 15px; font-size: 12px; text-transform: uppercase; }
-        td { background: rgba(0,0,0,0.5); padding: 15px; border-bottom: 1px solid #222; text-align: center; }
-        .loader { display: none; text-align: center; color: var(--red); font-weight: bold; margin-top: 10px; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; background: #0a0a0a; }
+        th, td { padding: 12px; border-bottom: 1px solid #222; text-align: left; }
+        th { color: var(--red); }
+        .edit-btn { color: #00ff00; cursor: pointer; background: none; border: none; font-size: 1.2rem; }
     </style>
 </head>
 <body>
+    <div class="card">
+        <center>
+            <div id="adminLevel" class="level-badge">LEVEL: 1 (INITIATING)</div>
+            <h2 style="color:var(--red); font-family:'Orbitron';">R07 CLOUD CONTROL</h2>
+            <p>LRK COMPUTER INSTITUTE - MIHINPURWA</p>
+        </center>
 
-    <div class="admin-card">
-        <h1>R07 PRO ADMIN</h1>
-        <div class="inst-name">LRK COMPUTER INSTITUTE - MIHINPURWA</div>
-        
+        <input type="hidden" id="editId">
         <div class="grid">
-            <div class="full">
-                <textarea id="qText" rows="3" placeholder="Enter Question Here..."></textarea>
-            </div>
+            <div class="full"><textarea id="qText" rows="3" placeholder="Type Question..."></textarea></div>
             <input type="text" id="opA" placeholder="Option A">
             <input type="text" id="opB" placeholder="Option B">
             <input type="text" id="opC" placeholder="Option C">
             <input type="text" id="opD" placeholder="Option D">
-            <div class="full">
-                <select id="ans">
-                    <option value="A">CORRECT: A</option>
-                    <option value="B">CORRECT: B</option>
-                    <option value="C">CORRECT: C</option>
-                    <option value="D">CORRECT: D</option>
-                </select>
-            </div>
+            <div class="full"><select id="ans"><option value="A">Answer: A</option><option value="B">Answer: B</option><option value="C">Answer: C</option><option value="D">Answer: D</option></select></div>
         </div>
-        <button class="btn-deploy" onclick="saveToCloud()" id="mainBtn">SYNC TO GOOGLE CLOUD</button>
-        <div id="loader" class="loader">UPLOADING DATA TO SERVER...</div>
-
-        <div id="qList"></div>
+        <button class="btn" onclick="saveData()" id="mainBtn">Deploy Question</button>
     </div>
+
+    <div id="qList" style="max-width:900px; margin:20px auto;"></div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIArbfM8Z1rWkGh8OpJMbSrdGN7Fenh3ffG8jX_WeGKuuSwG6P-hFMkWqF_wOD-6fS/exec";
 
-        async function saveToCloud() {
-            const q = document.getElementById('qText').value;
-            if(!q) return alert("Empty fields not allowed!");
-
+        async function saveData() {
             const data = {
                 type: 'quest',
-                row: [Date.now(), q, document.getElementById('opA').value, document.getElementById('opB').value, 
-                      document.getElementById('opC').value, document.getElementById('opD').value, document.getElementById('ans').value]
+                action: 'save',
+                row: [document.getElementById('editId').value || Date.now().toString(), 
+                      document.getElementById('qText').value, 
+                      document.getElementById('opA').value, 
+                      document.getElementById('opB').value, 
+                      document.getElementById('opC').value, 
+                      document.getElementById('opD').value, 
+                      document.getElementById('ans').value]
             };
-            
-            document.getElementById('loader').style.display = "block";
-            document.getElementById('mainBtn').disabled = true;
-
+            document.getElementById('mainBtn').innerText = "SYNCING...";
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-            alert("R07 SYSTEM: DATA DEPLOYED SUCCESSFULLY!");
+            alert("R07 Cloud Updated!");
             location.reload();
         }
 
         async function loadQs() {
-            try {
-                const res = await fetch(SCRIPT_URL);
-                const data = await res.json();
-                let html = `<table><tr><th>#</th><th>Sawal (English)</th><th>Ans</th></tr>`;
-                data.questions.slice(1).reverse().forEach((x, i) => {
-                    html += `<tr><td>${i+1}</td><td style="text-align:left">${x[1]}</td><td style="color:red; font-weight:bold;">${x[6]}</td></tr>`;
-                });
-                document.getElementById('qList').innerHTML = html + `</table>`;
-            } catch(e) { console.log("Connecting..."); }
+            const res = await fetch(SCRIPT_URL);
+            const data = await res.json();
+            const qs = data.questions.slice(1);
+            
+            // Level Calculation (100 questions per level)
+            const level = Math.floor(qs.length / 100) + 1;
+            document.getElementById('adminLevel').innerText = `LEVEL: ${level} (${qs.length} Questions)`;
+
+            let html = `<table><tr><th>#</th><th>Question</th><th>Ans</th><th>Edit</th></tr>`;
+            qs.reverse().forEach((x, i) => {
+                html += `<tr>
+                    <td>${qs.length - i}</td>
+                    <td>${x[1]}</td>
+                    <td style="color:red">${x[6]}</td>
+                    <td><button class="edit-btn" onclick="editForm('${x[0]}','${x[1]}','${x[2]}','${x[3]}','${x[4]}','${x[5]}','${x[6]}')"><i class="fas fa-edit"></i></button></td>
+                </tr>`;
+            });
+            document.getElementById('qList').innerHTML = html + `</table>`;
+        }
+
+        function editForm(id, q, a, b, c, d, ans) {
+            document.getElementById('editId').value = id;
+            document.getElementById('qText').value = q;
+            document.getElementById('opA').value = a;
+            document.getElementById('opB').value = b;
+            document.getElementById('opC').value = c;
+            document.getElementById('opD').value = d;
+            document.getElementById('ans').value = ans;
+            document.getElementById('mainBtn').innerText = "Update Question";
+            window.scrollTo(0,0);
         }
         loadQs();
     </script>
