@@ -2,92 +2,327 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>R07 ELITE ADMIN | LRK INSTITUTE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R07 ELITE ADMIN PORTAL | LRK INSTITUTE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --red: #ff0000; --dark: #050505; --neon: #ff4d4d; }
-        body { background: var(--dark); color: white; font-family: 'Poppins', sans-serif; padding: 20px; margin: 0; }
+        :root { --red: #ff0000; --dark: #050505; --card-bg: #111; --glow: rgba(255, 0, 0, 0.3); }
         
-        /* Level Badge Style */
-        .level-badge { background: linear-gradient(45deg, #ff0000, #550000); padding: 10px 20px; border-radius: 50px; border: 2px solid gold; font-weight: bold; display: inline-block; margin-bottom: 20px; box-shadow: 0 0 15px gold; }
+        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background: var(--dark); color: white; margin: 0; padding: 20px;
+            background-image: radial-gradient(circle at 50% 50%, #1a0000 0%, #050505 100%);
+            min-height: 100vh;
+        }
 
-        .card { background: #111; padding: 30px; border-radius: 15px; border: 2px solid var(--red); box-shadow: 0 0 30px rgba(255,0,0,0.3); max-width: 900px; margin: auto; }
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .full { grid-column: 1/-1; }
-        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #333; border-radius: 8px; background: #000; color: #fff; box-sizing: border-box; }
-        .btn { padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; background: var(--red); width: 100%; margin-top: 15px; text-transform: uppercase; }
+        /* Ambient Top Scanning Line */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 3px;
+            background: var(--red); box-shadow: 0 0 20px var(--red);
+            animation: scanLine 6s linear infinite; z-index: 1000; pointer-events: none;
+        }
+        @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
+
+        /* Folders / Level Dashboard Tabs */
+        .level-folder-container {
+            display: flex; gap: 15px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px;
+        }
+        .folder-tab {
+            background: #111; border: 1px solid #333; padding: 12px 25px; border-radius: 12px;
+            display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.3s;
+            border-left: 4px solid var(--red); min-width: 160px;
+        }
+        .folder-tab.active {
+            background: #200000; border-color: var(--red); box-shadow: 0 0 15px var(--glow);
+        }
+        .folder-tab i { font-size: 1.3rem; color: var(--red); }
+        .folder-title { font-weight: bold; font-size: 0.9rem; }
+        .folder-count { font-size: 0.8rem; opacity: 0.6; display: block; }
+
+        /* Layout Grid */
+        .admin-layout { 
+            display: grid; grid-template-columns: 460px 1fr; gap: 30px; 
+            max-width: 1450px; margin: auto; 
+        }
+
+        .control-panel { 
+            background: rgba(15, 15, 15, 0.95); padding: 25px; border-radius: 20px; 
+            border: 2px solid var(--red); box-shadow: 0 0 30px var(--glow);
+            height: fit-content; position: sticky; top: 20px;
+        }
+
+        h2 { color: var(--red); text-transform: uppercase; letter-spacing: 3px; margin: 5px 0; font-size: 1.5rem; }
+        .branding-text { font-size: 11px; color: #888; letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .full-width { grid-column: span 2; }
+
+        textarea, input, select { 
+            width: 100%; padding: 12px; background: #000; border: 1px solid #333; 
+            color: #fff; border-radius: 10px; outline: none; transition: 0.3s; font-size: 14px;
+        }
+        textarea:focus, input:focus, select:focus { border-color: var(--red); box-shadow: 0 0 10px var(--glow); }
+
+        .btn-action { 
+            width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; 
+            cursor: pointer; text-transform: uppercase; font-size: 15px; letter-spacing: 1px; margin-top: 15px;
+            transition: 0.2s;
+        }
+        .btn-deploy { background: var(--red); color: white; box-shadow: 0 0 15px var(--glow); }
+        .btn-deploy:hover { background: #cc0000; transform: translateY(-2px); }
+
+        /* Right Side Table Area */
+        .content-side { display: flex; flex-direction: column; gap: 20px; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 30px; background: #0a0a0a; }
-        th, td { padding: 12px; border-bottom: 1px solid #222; text-align: left; }
-        th { color: var(--red); }
-        .edit-btn { color: #00ff00; cursor: pointer; background: none; border: none; font-size: 1.2rem; }
+        .search-container {
+            background: #111; border: 1px solid #222; padding: 14px 20px; border-radius: 15px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .search-container i { color: var(--red); }
+        .search-container input { border: none; padding: 5px; background: transparent; width: 100%; color: white; }
+
+        .q-bank-wrapper { 
+            background: rgba(10, 10, 10, 0.9); border: 1px solid #222; 
+            border-radius: 20px; overflow: hidden; 
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #1a0000; color: var(--red); padding: 16px; text-align: left; font-size: 12px; border-bottom: 2px solid var(--red); letter-spacing: 1px; }
+        td { padding: 16px; border-bottom: 1px solid #222; font-size: 14px; vertical-align: top; }
+        tr:hover { background: rgba(255, 0, 0, 0.03); }
+
+        /* Actions Custom Engine */
+        .actions-cell { display: flex; gap: 12px; justify-content: center; }
+        .btn-table { background: none; border: none; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        .btn-edit { color: #00ff00; }
+        .btn-edit:hover { text-shadow: 0 0 10px #00ff00; }
+        .btn-delete { color: #ff3333; }
+        .btn-delete:hover { text-shadow: 0 0 10px #ff3333; }
+
+        #sync-loader { display: none; text-align: center; color: #ffaa00; font-weight: bold; margin-top: 12px; font-size: 13px; }
+
+        /* Mobile View Auto-Adjustment */
+        @media (max-width: 950px) {
+            body { padding: 10px; }
+            .admin-layout { grid-template-columns: 1fr; gap: 20px; }
+            .control-panel { position: relative; top: 0; padding: 20px; }
+            
+            table, th, td, tr { display: block; width: 100%; }
+            th { display: none; }
+            tr { background: #111; margin-bottom: 15px; border-radius: 12px; border: 1px solid #222; padding: 15px; }
+            td { border: none; padding: 6px 0; text-align: left; }
+            td:nth-of-type(1)::before { content: "Q. No: "; color: var(--red); font-weight: bold; }
+            td:nth-of-type(3)::before { content: "CORRECT ANS: "; color: #00ff00; font-weight: bold; }
+            
+            .actions-cell { margin-top: 12px; padding-top: 12px; border-top: 1px solid #222; justify-content: flex-end; gap: 25px; }
+            .btn-table { font-size: 20px; }
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <center>
-            <div id="adminLevel" class="level-badge">LEVEL: 1 (INITIATING)</div>
-            <h2 style="color:var(--red); font-family:'Orbitron';">R07 CLOUD CONTROL</h2>
-            <p>LRK COMPUTER INSTITUTE - MIHINPURWA</p>
-        </center>
 
-        <input type="hidden" id="editId">
-        <div class="grid">
-            <div class="full"><textarea id="qText" rows="3" placeholder="Type Question..."></textarea></div>
-            <input type="text" id="opA" placeholder="Option A">
-            <input type="text" id="opB" placeholder="Option B">
-            <input type="text" id="opC" placeholder="Option C">
-            <input type="text" id="opD" placeholder="Option D">
-            <div class="full"><select id="ans"><option value="A">Answer: A</option><option value="B">Answer: B</option><option value="C">Answer: C</option><option value="D">Answer: D</option></select></div>
+    <div class="level-folder-container" id="folderDashboard">
+        <div class="folder-tab active" onclick="switchFolder('all')">
+            <i class="fas fa-folder-open"></i>
+            <div>
+                <span class="folder-title">Root Storage</span>
+                <span class="folder-count" id="count-all">0 Questions</span>
+            </div>
         </div>
-        <button class="btn" onclick="saveData()" id="mainBtn">Deploy Question</button>
     </div>
 
-    <div id="qList" style="max-width:900px; margin:20px auto;"></div>
+    <div class="admin-layout">
+        
+        <div class="control-panel">
+            <center>
+                <h2>R07 CONTROL</h2>
+                <div class="branding-text">LRK COMPUTER INSTITUTE - MIHINPURWA</div>
+            </center>
+
+            <input type="hidden" id="editId">
+            
+            <div class="form-grid">
+                <div class="full-width">
+                    <textarea id="qText" rows="3" placeholder="Type or Paste Question text here..."></textarea>
+                </div>
+                <input type="text" id="opA" placeholder="Option A">
+                <input type="text" id="opB" placeholder="Option B">
+                <input type="text" id="opC" placeholder="Option C">
+                <input type="text" id="opD" placeholder="Option D">
+                <div class="full-width">
+                    <select id="ans">
+                        <option value="A">Set Correct Answer: Option A</option>
+                        <option value="B">Set Correct Answer: Option B</option>
+                        <option value="C">Set Correct Answer: Option C</option>
+                        <option value="D">Set Correct Answer: Option D</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="btn-action btn-deploy" onclick="saveData()" id="mainBtn">Deploy Data to Cloud</button>
+            <div id="sync-loader"><i class="fas fa-satellite-dish"></i> R07 DATABASE: SYNCING WITH GOOGLE SHEET...</div>
+        </div>
+
+        <div class="content-side">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchBar" onkeyup="filterSystem()" placeholder="Search questions by typing text...">
+            </div>
+
+            <div class="q-bank-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px; text-align: center;">ID</th>
+                            <th>Active Question Text</th>
+                            <th style="width: 80px; text-align: center;">Ans</th>
+                            <th style="width: 110px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="qListBody">
+                        <tr><td colspan="4" style="text-align:center; padding: 40px; color: #666;"><i class="fas fa-spinner fa-spin"></i> Connecting to Central Database...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIArbfM8Z1rWkGh8OpJMbSrdGN7Fenh3ffG8jX_WeGKuuSwG6P-hFMkWqF_wOD-6fS/exec";
+        // AAPKA CONFIG-POWERED DEPLOYMENT WEB APP URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyY1jBIif_3mX5y_chz964qZTSfzFsAuOw1qOaWrYGKPlfztzuzEcGBwGs5WgDwG6gMsQ/exec";
+        
+        let localDataCache = [];
+        let selectedFolder = 'all';
 
+        // 1. ADD & UPDATE ENGINE
         async function saveData() {
+            const q = document.getElementById('qText').value.trim();
+            if(!q) return alert("Error: Question box khali nahi choda ja sakta.");
+
+            const editId = document.getElementById('editId').value;
+            
             const data = {
                 type: 'quest',
-                action: 'save',
-                row: [document.getElementById('editId').value || Date.now().toString(), 
-                      document.getElementById('qText').value, 
-                      document.getElementById('opA').value, 
-                      document.getElementById('opB').value, 
-                      document.getElementById('opC').value, 
-                      document.getElementById('opD').value, 
-                      document.getElementById('ans').value]
+                action: editId ? 'update' : 'save',
+                row: [
+                    editId || Date.now().toString(), // Unique Key Generator
+                    q, 
+                    document.getElementById('opA').value, 
+                    document.getElementById('opB').value, 
+                    document.getElementById('opC').value, 
+                    document.getElementById('opD').value, 
+                    document.getElementById('ans').value
+                ]
             };
-            document.getElementById('mainBtn').innerText = "SYNCING...";
+            
+            toggleLoader(true);
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-            alert("R07 Cloud Updated!");
+            alert("R07 Cloud System: Question Data Sync Successful!");
             location.reload();
         }
 
-        async function loadQs() {
-            const res = await fetch(SCRIPT_URL);
-            const data = await res.json();
-            const qs = data.questions.slice(1);
+        // 2. DELETE ENGINE
+        async function deleteQuestion(id) {
+            if(!confirm("DANGER ALERT: Kya aap is question ko database se hamesha ke liye delete karna chahte hain?")) return;
             
-            // Level Calculation (100 questions per level)
-            const level = Math.floor(qs.length / 100) + 1;
-            document.getElementById('adminLevel').innerText = `LEVEL: ${level} (${qs.length} Questions)`;
-
-            let html = `<table><tr><th>#</th><th>Question</th><th>Ans</th><th>Edit</th></tr>`;
-            qs.reverse().forEach((x, i) => {
-                html += `<tr>
-                    <td>${qs.length - i}</td>
-                    <td>${x[1]}</td>
-                    <td style="color:red">${x[6]}</td>
-                    <td><button class="edit-btn" onclick="editForm('${x[0]}','${x[1]}','${x[2]}','${x[3]}','${x[4]}','${x[5]}','${x[6]}')"><i class="fas fa-edit"></i></button></td>
-                </tr>`;
-            });
-            document.getElementById('qList').innerHTML = html + `</table>`;
+            const data = {
+                type: 'quest',
+                action: 'delete',
+                row: [id]
+            };
+            
+            toggleLoader(true);
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+            alert("R07 Cloud System: Question deleted successfully!");
+            location.reload();
         }
 
-        function editForm(id, q, a, b, c, d, ans) {
+        // Initialize Central Database Engine
+        async function initDashboardEngine() {
+            try {
+                const res = await fetch(SCRIPT_URL);
+                const data = await res.json();
+                localDataCache = data.questions.slice(1);
+                
+                buildLevelFolders();
+                renderTableMatrix(localDataCache);
+            } catch(e) {
+                document.getElementById('qListBody').innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>Authentication Error: Check SCRIPT_URL or Google AppScript deployment!</td></tr>";
+            }
+        }
+
+        // Level Folders Auto-Builder
+        function buildLevelFolders() {
+            const totalQs = localDataCache.length;
+            document.getElementById('count-all').innerText = `${totalQs} Questions`;
+            
+            const totalLevels = Math.max(1, Math.ceil(totalQs / 100));
+            const container = document.getElementById('folderDashboard');
+            
+            container.innerHTML = `
+                <div class="folder-tab ${selectedFolder === 'all' ? 'active' : ''}" onclick="switchFolder('all')">
+                    <i class="fas fa-folder-open"></i>
+                    <div><span class="folder-title">Root Folder</span><span class="folder-count">${totalQs} Qs Total</span></div>
+                </div>
+            `;
+
+            for(let l = 1; l <= totalLevels; l++) {
+                const lowerBound = (l - 1) * 100;
+                const upperBound = Math.min(totalQs, l * 100);
+                const itemsCount = Math.max(0, upperBound - lowerBound);
+
+                container.innerHTML += `
+                    <div class="folder-tab ${selectedFolder == l ? 'active' : ''}" onclick="switchFolder(${l})">
+                        <i class="fas fa-folder"></i>
+                        <div><span class="folder-title">Level Folder ${l}</span><span class="folder-count">${itemsCount} Qs</span></div>
+                    </div>
+                `;
+            }
+        }
+
+        // Table List Renderer Matrix
+        function renderTableMatrix(dataArray) {
+            let html = "";
+            let dataToDisplay = [...dataArray];
+
+            if(selectedFolder !== 'all') {
+                const levelIndex = parseInt(selectedFolder);
+                const minIndex = (levelIndex - 1) * 100;
+                const maxIndex = levelIndex * 100;
+                dataToDisplay = dataArray.slice(minIndex, maxIndex);
+            }
+
+            dataToDisplay.reverse().forEach((x) => {
+                const absoluteId = dataArray.findIndex(item => item[0] === x[0]) + 1;
+                
+                html += `
+                    <tr>
+                        <td style="text-align: center; font-weight: bold; color: var(--red);">${absoluteId}</td>
+                        <td style="line-height: 1.5;">${x[1]}</td>
+                        <td style="text-align: center; font-weight: bold; color: #ffaa00;">${x[6]}</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="btn-table btn-edit" onclick="populateFormFields('${x[0]}','${cleanString(x[1])}','${cleanString(x[2])}','${cleanString(x[3])}','${cleanString(x[4])}','${cleanString(x[5])}','${x[6]}')" title="Edit Question"><i class="fas fa-edit"></i></button>
+                                <button class="btn-table btn-delete" onclick="deleteQuestion('${x[0]}')" title="Delete Question"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('qListBody').innerHTML = html || "<tr><td colspan='4' style='text-align:center; padding:20px; color:#aaa;'>Is folder me koi question nahi hai.</td></tr>";
+        }
+
+        function switchFolder(folderId) {
+            selectedFolder = folderId;
+            buildLevelFolders();
+            renderTableMatrix(localDataCache);
+        }
+
+        // Populate form for Editing
+        function populateFormFields(id, q, a, b, c, d, ans) {
             document.getElementById('editId').value = id;
             document.getElementById('qText').value = q;
             document.getElementById('opA').value = a;
@@ -95,10 +330,35 @@
             document.getElementById('opC').value = c;
             document.getElementById('opD').value = d;
             document.getElementById('ans').value = ans;
-            document.getElementById('mainBtn').innerText = "Update Question";
-            window.scrollTo(0,0);
+            
+            const actionButton = document.getElementById('mainBtn');
+            actionButton.innerText = "Update Selected Question";
+            actionButton.style.background = "#00ff00";
+            actionButton.style.color = "#000";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        loadQs();
+
+        function filterSystem() {
+            const query = document.getElementById('searchBar').value.toLowerCase();
+            const matchedSet = localDataCache.filter(item => {
+                return (item[1] && item[1].toLowerCase().includes(query)) || 
+                       (item[2] && item[2].toLowerCase().includes(query));
+            });
+            renderTableMatrix(matchedSet);
+        }
+
+        function toggleLoader(show) {
+            document.getElementById('sync-loader').style.display = show ? "block" : "none";
+            document.getElementById('mainBtn').disabled = show;
+            if(show) document.getElementById('mainBtn').innerText = "DATA TRANSMITTING ROUTE SYNC...";
+        }
+
+        function cleanString(val) {
+            if(!val) return "";
+            return val.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+        }
+
+        window.onload = initDashboardEngine;
     </script>
 </body>
 </html>
