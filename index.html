@@ -7,92 +7,135 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { 
-            --edu-blue: #1a73e8; --edu-dark: #0d47a1; --white: #ffffff; 
-            --bg: #f0f4f8; --success: #2e7d32; --danger: #d32f2f;
+            --edu-blue: #6366f1; 
+            --edu-dark: #1e1b4b; 
+            --white: #ffffff; 
+            --bg: #f8fafc; 
+            --success: #10b981; 
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
         }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--text-main); }
 
         /* 1. Login Overlay */
         #authOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--edu-dark); display: flex; justify-content: center;
+            background: radial-gradient(circle, var(--edu-dark) 0%, #090514 100%); display: flex; justify-content: center;
             align-items: center; z-index: 9999;
         }
         .login-card {
-            background: white; padding: 40px; border-radius: 20px;
+            background: white; padding: 40px; border-radius: 24px;
             text-align: center; width: 90%; max-width: 400px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
         }
-        .login-card i { color: var(--edu-blue); font-size: 50px; margin-bottom: 20px; }
+        .login-card i { color: var(--edu-blue); font-size: 60px; margin-bottom: 20px; }
         .login-card input {
             width: 100%; padding: 15px; margin: 20px 0;
-            border: 2px solid #eee; border-radius: 10px; font-size: 16px; text-align: center;
+            border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; text-align: center; outline: none;
+            transition: 0.3s;
         }
+        .login-card input:focus { border-color: var(--edu-blue); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15); }
         .login-card button {
             background: var(--edu-blue); color: white; border: none;
-            padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%;
+            padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; transition: 0.3s;
         }
+        .login-card button:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        /* 2. Main Layout (PC Wide) */
+        /* 2. Main Layout */
         #mainAdminContent { display: none; }
-        .container { width: 98%; max-width: 1600px; margin: auto; padding: 20px; box-sizing: border-box; }
+        .container { width: 98%; max-width: 1650px; margin: auto; padding: 25px; box-sizing: border-box; }
         
         .header-bar { 
-            background: white; padding: 15px 25px; border-radius: 15px; 
+            background: white; padding: 20px 30px; border-radius: 20px; 
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 25px; flex-wrap: wrap; gap: 15px;
         }
 
-        .main-grid { display: grid; grid-template-columns: 420px 1fr; gap: 25px; }
+        /* Top Bar Indicators */
+        .top-indicators { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .ind-card { background: #fff; padding: 15px 25px; border-radius: 16px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); min-width: 200px; flex-1; border-bottom: 4px solid var(--edu-blue); }
+        .ind-card.dup { border-color: var(--warning); }
+        .ind-card i { font-size: 1.8rem; color: var(--edu-blue); }
+        .ind-card.dup i { color: var(--warning); }
+        .ind-card div h5 { margin: 0; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; }
+        .ind-card div h3 { margin: 5px 0 0 0; font-size: 1.5rem; font-weight: 800; }
+
+        .main-grid { display: grid; grid-template-columns: 440px 1fr; gap: 25px; }
+
+        @media (max-width: 1024px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
 
         /* 3. Form & Sidebar */
-        .admin-box { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); position: sticky; top: 20px; }
-        .admin-box h4 { margin: 0 0 20px 0; color: var(--edu-dark); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .admin-box { background: white; padding: 30px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); position: sticky; top: 25px; height: fit-content; }
+        .admin-box h4 { margin: 0 0 20px 0; color: var(--edu-dark); font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
         
-        .input-group { margin-bottom: 12px; }
-        label { display: block; font-size: 11px; font-weight: bold; color: #555; margin-bottom: 4px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 2px solid #eef0f2; border-radius: 10px; box-sizing: border-box; font-size: 14px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.5px; }
+        input, select, textarea { width: 100%; padding: 12px 15px; border: 2px solid #f1f5f9; background: #f8fafc; border-radius: 12px; box-sizing: border-box; font-size: 14px; color: var(--text-main); transition: 0.3s; outline: none; }
+        input:focus, select:focus, textarea:focus { background: #fff; border-color: var(--edu-blue); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
         
-        .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         
+        .control-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+
         .tf-btn { 
-            background: #f1f3f4; border: 1px solid #ddd; padding: 10px; 
-            border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold;
-            width: 100%; margin-bottom: 15px; transition: 0.3s;
+            background: #e0e7ff; color: var(--edu-blue); border: none; padding: 12px; 
+            border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: bold;
+            width: 100%; margin-bottom: 20px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .tf-btn:hover { background: #e8eaed; }
+        .tf-btn:hover { background: var(--edu-blue); color: white; }
 
         .btn-sync { 
             background: var(--edu-blue); color: white; border: none; padding: 15px; 
-            width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px;
+            width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 15px; transition: 0.3s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
         }
-        .btn-update { background: #f2994a; display: none; }
+        .btn-sync:hover { opacity: 0.95; transform: translateY(-1px); }
+        .btn-update { background: var(--warning); display: none; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2); }
 
-        /* 4. Table Area */
-        .table-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .table-header { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: #fff; border-bottom: 1px solid #eee; }
+        /* 4. Table Area & Filters */
+        .table-card { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.02); display: flex; flex-direction: column; }
+        .table-header { padding: 25px; display: flex; justify-content: space-between; align-items: center; background: #fff; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; gap: 15px; }
         
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8f9fc; color: var(--edu-dark); padding: 15px; text-align: left; font-size: 12px; }
-        td { padding: 12px 15px; border-bottom: 1px solid #f1f1f1; font-size: 13px; }
+        .filter-tabs { display: flex; gap: 8px; background: #f1f5f9; padding: 6px; border-radius: 12px; }
+        .filter-tab { padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); transition: 0.2s; }
+        .filter-tab.active { background: white; color: var(--edu-blue); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: #f8fafc; color: var(--text-muted); padding: 18px 20px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; font-size: 14px; vertical-align: middle; }
         
+        /* Badges */
+        .lvl-badge { background: #f1f5f9; color: var(--text-main); padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; display: inline-block; }
+        .key-badge { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.85rem; }
+
         .action-btns { display: flex; gap: 8px; }
-        .act-btn { width: 35px; height: 35px; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .edit-btn { background: #e8f0fe; color: var(--edu-blue); }
-        .del-btn { background: #fff0f0; color: var(--danger); }
+        .act-btn { width: 36px; height: 36px; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .edit-btn { background: #e0e7ff; color: var(--edu-blue); }
+        .edit-btn:hover { background: var(--edu-blue); color: white; }
+        .del-btn { background: #fee2e2; color: var(--danger); }
+        .del-btn:hover { background: var(--danger); color: white; }
 
-        #toast { position: fixed; bottom: 30px; right: 30px; padding: 15px 30px; border-radius: 10px; color: white; display: none; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        /* Bulk Upload Area */
+        .bulk-card { background: #f8fafc; border: 2px dashed #cbd5e1; padding: 15px; border-radius: 16px; margin-top: 20px; text-align: center; position: relative; }
+        .bulk-card input[type="file"] { position: absolute; width: 100%; height: 100%; top:0; left:0; opacity: 0; cursor: pointer; }
+        .bulk-card i { font-size: 1.5rem; color: var(--text-muted); margin-bottom: 5px; }
+
+        #toast { position: fixed; bottom: 30px; right: 30px; padding: 16px 30px; border-radius: 12px; color: white; display: none; z-index: 10000; box-shadow: 0 15px 30px rgba(0,0,0,0.15); font-weight: 600; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div id="authOverlay">
     <div class="login-card">
-        <i class="fas fa-user-shield"></i>
-        <h2>Admin Access</h2>
-        <input type="password" id="passInp" placeholder="Enter Password">
-        <button onclick="checkPass()">UNLOCK SYSTEM</button>
-        <p id="errMsg" style="color:red; font-size:12px; margin-top:15px; display:none;">Galat Password! Dubara koshish karein.</p>
+        <i class="fas fa-shield-halved"></i>
+        <h2>LRK System Unlock</h2>
+        <input type="password" id="passInp" placeholder="Enter Secure Admin Pin">
+        <button onclick="checkPass()">AUTHENTICATE INTERFACE</button>
+        <p id="errMsg" style="color:var(--danger); font-size:13px; margin-top:15px; font-weight:600; display:none;"><i class="fas fa-triangle-exclamation"></i> Access Denied! Incorrect Token Key.</p>
     </div>
 </div>
 
@@ -101,68 +144,110 @@
     <div class="container">
         
         <div class="header-bar">
-            <h2 style="margin: 0; color: var(--edu-dark);"><i class="fas fa-database"></i> LRK MASTER CONTROL <span style="font-size: 12px; color: #999;">V2.3</span></h2>
-            <button onclick="loadData()" style="background:var(--edu-blue); color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;"><i class="fas fa-sync"></i> REFRESH CLOUD</button>
+            <h2 style="margin: 0; color: var(--edu-dark); font-weight:800; font-size:1.6rem;"><i class="fas fa-circle-nodes" style="color: var(--edu-blue);"></i> LRK CORE ENGINE <span style="font-size: 12px; color: var(--text-muted); background:#f1f5f9; padding:4px 8px; border-radius:6px; margin-left:5px;">V3.0 Smart Database</span></h2>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="loadData()" style="background:var(--edu-blue); color:white; border:none; padding:12px 22px; border-radius:12px; cursor:pointer; font-weight:600; display:flex; align-items:center; gap:8px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);"><i class="fas fa-arrows-rotate"></i> REFRESH CLOUD HUB</button>
+            </div>
+        </div>
+
+        <div class="top-indicators">
+            <div class="ind-card">
+                <i class="fas fa-layer-group"></i>
+                <div>
+                    <h5 id="indTitle">Total Raw Cloud Records</h5>
+                    <h3 id="statRaw">0</h3>
+                </div>
+            </div>
+            <div class="ind-card">
+                <i class="fas fa-database"></i>
+                <div>
+                    <h5>Unique Filtered Questions</h5>
+                    <h3 id="statUnique">0</h3>
+                </div>
+            </div>
+            <div class="ind-card dup">
+                <i class="fas fa-filter-circle-xmark"></i>
+                <div>
+                    <h5>Duplicates Ignored</h5>
+                    <h3 id="statDup">0</h3>
+                </div>
+            </div>
         </div>
 
         <div class="main-grid">
             <div class="admin-box">
-                <h4 id="formTitle">Add Question</h4>
+                <h4 id="formTitle"><i class="fas fa-file-signature"></i> Add New Question Entry</h4>
                 <input type="hidden" id="editId">
                 
                 <button class="tf-btn" onclick="setTrueFalse()">
-                    <i class="fas fa-toggle-on"></i> USE TRUE / FALSE MODE
+                    <i class="fas fa-toggle-on"></i> ACTIVATE TRUE / FALSE OPTION KEY
                 </button>
 
                 <div class="input-group">
-                    <label>QUESTION TEXT</label>
-                    <textarea id="qTxt" rows="3" placeholder="Sawal likhein..."></textarea>
+                    <label>QUESTION MAIN STREAM TEXT</label>
+                    <textarea id="qTxt" rows="3" placeholder="Sawal ka text content yahan likhein..."></textarea>
                 </div>
                 
                 <div class="grid-options">
-                    <div class="input-group"><label>OPTION A</label><input type="text" id="opA"></div>
-                    <div class="input-group"><label>OPTION B</label><input type="text" id="opB"></div>
-                    <div class="input-group"><label>OPTION C</label><input type="text" id="opC"></div>
-                    <div class="input-group"><label>OPTION D</label><input type="text" id="opD"></div>
+                    <div class="input-group"><label>OPTION VALUE A</label><input type="text" id="opA"></div>
+                    <div class="input-group"><label>OPTION VALUE B</label><input type="text" id="opB"></div>
+                    <div class="input-group"><label>OPTION VALUE C</label><input type="text" id="opC"></div>
+                    <div class="input-group"><label>OPTION VALUE D</label><input type="text" id="opD"></div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="control-row">
                     <div class="input-group">
-                        <label>CORRECT ANS (KEY)</label>
+                        <label>CORRECT CHOICE (ANSWER KEY)</label>
                         <select id="correctAns">
-                            <option value="A">A</option><option value="B">B</option>
-                            <option value="C">C</option><option value="D">D</option>
+                            <option value="A">Option A</option><option value="B">Option B</option>
+                            <option value="C">Option C</option><option value="D">Option D</option>
                         </select>
                     </div>
                     <div class="input-group">
-                        <label>LEVEL (UNLIMITED)</label>
-                        <input type="number" id="qLevel" value="1">
+                        <label>INTELLIGENCE LEVEL LAYER</label>
+                        <input type="number" id="qLevel" value="1" min="1">
                     </div>
                 </div>
 
-                <button class="btn-sync" id="saveBtn" onclick="saveAction('save')">SAVE TO CLOUD</button>
-                <button class="btn-sync btn-update" id="updateBtn" onclick="saveAction('update')">UPDATE QUESTION</button>
-                <button id="cancelBtn" onclick="resetForm()" style="display:none; width:100%; background:none; border:none; color:var(--danger); margin-top:10px; cursor:pointer; font-size:12px;">Cancel Edit</button>
+                <button class="btn-sync" id="saveBtn" onclick="saveAction('save')"><i class="fas fa-cloud-arrow-up"></i> COMMIT SAVE TO CLOUD</button>
+                <button class="btn-sync btn-update" id="updateBtn" onclick="saveAction('update')"><i class="fas fa-cloud-arrow-up"></i> EXECUTE CLOUD UPDATE</button>
+                <button id="cancelBtn" onclick="resetForm()" style="display:none; width:100%; background:none; border:none; color:var(--danger); margin-top:12px; cursor:pointer; font-size:13px; font-weight:700;">Cancel Edit Session</button>
+            
+                <div class="bulk-card">
+                    <i class="fas fa-file-import"></i>
+                    <p style="margin: 5px 0 0 0; font-size:12px; font-weight:bold; color:var(--text-muted);">Bulk Data Engine: CSV / JSON Upload</p>
+                    <input type="file" id="bulkInput" accept=".csv, .json" onchange="handleBulkUpload(event)">
+                </div>
             </div>
 
             <div class="table-card">
                 <div class="table-header">
-                    <b>Cloud Database: <span id="qCount">0</span> Questions</b>
-                    <input type="text" id="searchBox" onkeyup="filterData()" placeholder="Search questions..." style="padding:10px; border-radius:10px; border:1px solid #ddd; width:250px;">
+                    <div class="filter-tabs" id="levelFilterTabs">
+                        <div class="filter-tab active" onclick="setLevelFilter('all', this)">All Levels</div>
+                        <div class="filter-tab" onclick="setLevelFilter('1', this)">Level 1</div>
+                        <div class="filter-tab" onclick="setLevelFilter('2', this)">Level 2</div>
+                        <div class="filter-tab" onclick="setLevelFilter('3', this)">Level 3</div>
+                    </div>
+                    <div style="position:relative;">
+                        <input type="text" id="searchBox" onkeyup="filterData()" placeholder="Filter via words stream..." style="padding:10px 15px 10px 35px; border-radius:12px; border:1px solid #e2e8f0; width:260px; background:#f8fafc;">
+                        <i class="fas fa-search" style="position:absolute; left:12px; top:14px; color:var(--text-muted); font-size:13px;"></i>
+                    </div>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th width="80px">LEVEL</th>
-                            <th>QUESTION DETAILS</th>
-                            <th width="60px">KEY</th>
-                            <th width="120px">ACTION</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminTable">
-                        <tr><td colspan="4" style="text-align:center; padding:50px; color:#999;">Fetching secure data...</td></tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="90px">LEVEL</th>
+                                <th>QUESTION COMPONENT STREAM & PARAMETERS</th>
+                                <th width="70px">KEY</th>
+                                <th width="110px">ACTION CONTROLS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTable">
+                            <tr><td colspan="4" style="text-align:center; padding:60px; color:var(--text-muted); font-weight:600;"><i class="fas fa-circle-notch fa-spin"></i> Initializing Cloud Nodes Stream...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -171,7 +256,20 @@
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbypq0a5mRG2pFLs63pyvoxgLz-9w4wPrLbCWI8dVL1VPqT4sX5Obh7f3dq0htjT3oDT/exec";
     const MASTER_PASS = "Ritesh kumar 07";
-    let masterData = [];
+    let masterRawData = [];
+    let uniqueFilteredLogs = [];
+    let activeLevelFilter = 'all';
+
+    // Anti-Duplicate Normalized String Algorithm
+    function generateNormalizedKey(text) {
+        if (!text) return "";
+        return text.toLowerCase()
+                   .replace(/[^a-zA-Z0-9\u0600-\u06FF\u0900-\u097F]/g, '') // Supports Hindi/English alphanumerics
+                   .split(/\s+/)
+                   .filter(word => word.length > 0)
+                   .sort()
+                   .join("");
+    }
 
     // 1. Password Security
     function checkPass() {
@@ -185,35 +283,86 @@
         }
     }
 
-    // 2. Load Data
+    // 2. Load and De-duplicate Cloud Data
     async function loadData() {
         try {
-            const res = await fetch(SCRIPT_URL);
+            const res = await fetch(`${SCRIPT_URL}?_cb=${Date.now()}`);
             const db = await res.json();
-            masterData = db.questions && db.questions.length > 1 ? db.questions.slice(1) : [];
-            renderUI(masterData);
-        } catch (e) { showToast("Connection Error!", "danger"); }
+            masterRawData = db.questions && db.questions.length > 1 ? db.questions.slice(1) : [];
+            
+            document.getElementById('statRaw').innerText = masterRawData.length;
+
+            // Algorithm Run: Anti Duplicate Rows Pipeline
+            let seenNormalizedKeys = new Set();
+            uniqueFilteredLogs = [];
+            let duplicateCounter = 0;
+
+            // Process reverse to keep latest modifications active
+            masterRawData.slice().reverse().forEach(row => {
+                const normalizedQuestion = generateNormalizedKey(row[1]);
+                if(!normalizedQuestion) return;
+
+                if(!seenNormalizedKeys.has(normalizedQuestion)) {
+                    seenNormalizedKeys.add(normalizedQuestion);
+                    uniqueFilteredLogs.push(row);
+                } else {
+                    duplicateCounter++;
+                }
+            });
+
+            // Reverse again to keep table view structural sequence orderly
+            uniqueFilteredLogs.reverse();
+
+            document.getElementById('statUnique').innerText = uniqueFilteredLogs.length;
+            document.getElementById('statDup').innerText = duplicateCounter;
+
+            executeUIRender();
+        } catch (e) { showToast("Cloud Hub Synced Offline!", "danger"); }
     }
 
-    // 3. Render Table
-    function renderUI(data) {
-        document.getElementById('qCount').innerText = data.length;
+    // 3. UI Generator Engine
+    function executeUIRender() {
         const tbody = document.getElementById('adminTable');
         tbody.innerHTML = "";
         
-        data.slice().reverse().forEach(row => {
+        const searchVal = document.getElementById('searchBox').value.toLowerCase();
+
+        let visibleList = uniqueFilteredLogs.filter(row => {
+            // Level Filter Check
+            const currentLevel = (row[7] || '1').toString();
+            if(activeLevelFilter !== 'all' && currentLevel !== activeLevelFilter) return false;
+
+            // Search Keyword Filter Check
+            if(searchVal) {
+                const combinedStringStr = `${row[1]} ${row[2]} ${row[3]} ${row[4]} ${row[5]}`.toLowerCase();
+                if(!combinedStringStr.includes(searchVal)) return false;
+            }
+            return true;
+        });
+
+        if(visibleList.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:50px; color:var(--text-muted);">Database Empty / No filter query matched.</td></tr>`;
+            return;
+        }
+
+        visibleList.slice().reverse().forEach(row => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><span style="background:#f0f0f0; padding:4px 10px; border-radius:5px; font-weight:bold;">L-${row[7] || 1}</span></td>
+                <td><span class="lvl-badge">L-${row[7] || 1}</span></td>
                 <td>
-                    <div style="font-weight:600;">${row[1]}</div>
-                    <div style="font-size:11px; color:#777;">A: ${row[2]} | B: ${row[3]} | C: ${row[4]} | D: ${row[5]}</div>
+                    <div style="font-weight:700; margin-bottom:5px; line-height:1.4; color:var(--text-main);">${row[1]}</div>
+                    <div style="font-size:12px; color:var(--text-muted); font-weight:500;">
+                        <span style="margin-right:10px;"><b>A:</b> ${row[2] || '-'}</span>
+                        <span style="margin-right:10px;"><b>B:</b> ${row[3] || '-'}</span>
+                        <span style="margin-right:10px;"><b>C:</b> ${row[4] || '-'}</span>
+                        <span><b>D:</b> ${row[5] || '-'}</span>
+                    </div>
                 </td>
-                <td style="font-weight:bold; color:var(--edu-blue)">${row[6]}</td>
+                <td><span class="key-badge">${row[6]}</span></td>
                 <td>
                     <div class="action-btns">
-                        <button class="act-btn edit-btn" onclick="editMode('${row[0]}')"><i class="fas fa-edit"></i></button>
-                        <button class="act-btn del-btn" onclick="deleteItem('${row[0]}')"><i class="fas fa-trash"></i></button>
+                        <button class="act-btn edit-btn" onclick="editMode('${row[0]}')" title="Edit Entry"><i class="fas fa-marker"></i></button>
+                        <button class="act-btn del-btn" onclick="deleteItem('${row[0]}')" title="Purge Entry"><i class="fas fa-trash-can"></i></button>
                     </div>
                 </td>
             `;
@@ -221,18 +370,18 @@
         });
     }
 
-    // 4. True/False Handler
+    // 4. Smart True/False Handler
     function setTrueFalse() {
         document.getElementById('opA').value = "True";
         document.getElementById('opB').value = "False";
         document.getElementById('opC').value = "-";
         document.getElementById('opD').value = "-";
-        showToast("True/False Mode Set", "success");
+        showToast("True / False Form Template Applied", "success");
     }
 
-    // 5. Edit & Update Logic
+    // 5. Edit Modes
     function editMode(id) {
-        const item = masterData.find(r => r[0].toString() === id.toString());
+        const item = uniqueFilteredLogs.find(r => r[0].toString() === id.toString());
         if(!item) return;
 
         document.getElementById('editId').value = item[0];
@@ -244,20 +393,19 @@
         document.getElementById('correctAns').value = item[6];
         document.getElementById('qLevel').value = item[7] || 1;
 
-        document.getElementById('formTitle').innerText = "Edit Question";
+        document.getElementById('formTitle').innerHTML = '<i class="fas fa-marker" style="color:var(--warning)"></i> Modifying Active Entry Data';
         document.getElementById('saveBtn').style.display = "none";
         document.getElementById('updateBtn').style.display = "block";
         document.getElementById('cancelBtn').style.display = "block";
-        window.scrollTo(0,0);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function saveAction(mode) {
         const id = mode === 'update' ? document.getElementById('editId').value : Date.now().toString();
         const q = document.getElementById('qTxt').value.trim();
-        if(!q) return showToast("Question text is required!", "danger");
+        if(!q) return showToast("Question entry body cannot be null!", "danger");
 
-        // UI Feedback
-        showToast(mode === 'update' ? "Updating..." : "Saving...", "success");
+        showToast(mode === 'update' ? "Syncing cloud modifications..." : "Registering cloud payload...", "success");
 
         if(mode === 'update') {
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'questions', action: 'delete', row: [id] }) });
@@ -271,37 +419,84 @@
 
         await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
         resetForm();
-        setTimeout(loadData, 1500);
+        setTimeout(loadData, 1200);
     }
 
-    // 6. Delete Logic
+    // 6. Delete Action
     async function deleteItem(id) {
-        if(!confirm("Kya aap is sawal ko delete karna chahte hain?")) return;
-        showToast("Deleting...", "danger");
+        if(!confirm("Alert: Kya aap is structural record entry ko cloud database se hatana chahte hain?")) return;
+        showToast("Purging operational record data...", "danger");
         const payload = { type: 'questions', action: 'delete', row: [id.toString()] };
         await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
         setTimeout(loadData, 1000);
     }
 
+    // Bulk Upload Engine
+    function handleBulkUpload(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const text = e.target.result;
+                if(file.name.endsWith('.json')) {
+                    const parsed = JSON.parse(text);
+                    if(Array.isArray(parsed)) {
+                        showToast(`Uploading ${parsed.length} items bulk stream...`, "success");
+                        for(let item of parsed) {
+                            let payload = {
+                                type: 'questions', action: 'save',
+                                row: [Date.now() + Math.random().toString(), item.question, item.optA, item.optB, item.optC, item.optD, item.correctAns, item.level || 1]
+                            };
+                            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                        }
+                    }
+                } else {
+                    // Quick Row Processing Fallback CSV
+                    const rows = text.split('\n').slice(1);
+                    showToast(`Injecting CSV packets data...`, "success");
+                    for(let row of rows) {
+                        const cols = row.split(',');
+                        if(cols.length >= 6) {
+                            let payload = {
+                                type: 'questions', action: 'save',
+                                row: [Date.now() + Math.random().toString(), cols[0], cols[1], cols[2], cols[3], cols[4], cols[5], cols[6] || 1]
+                            };
+                            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                        }
+                    }
+                }
+                showToast("Bulk Database Stream Success!", "success");
+                setTimeout(loadData, 2000);
+            } catch(err) { alert("File schema parsing mismatched."); }
+        };
+        reader.readAsText(file);
+    }
+
     function resetForm() {
         ['editId','qTxt','opA','opB','opC','opD'].forEach(i => document.getElementById(i).value = "");
         document.getElementById('qLevel').value = 1;
-        document.getElementById('formTitle').innerText = "Add Question";
+        document.getElementById('formTitle').innerHTML = '<i class="fas fa-file-signature"></i> Add New Question Entry';
         document.getElementById('saveBtn').style.display = "block";
         document.getElementById('updateBtn').style.display = "none";
         document.getElementById('cancelBtn').style.display = "none";
     }
 
-    function filterData() {
-        const val = document.getElementById('searchBox').value.toLowerCase();
-        const filtered = masterData.filter(r => r[1].toLowerCase().includes(val));
-        renderUI(filtered);
+    function setLevelFilter(lvl, el) {
+        activeLevelFilter = lvl;
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        executeUIRender();
     }
+
+    function filterData() { executeUIRender(); }
 
     function showToast(m, t) {
         const x = document.getElementById('toast');
-        x.innerText = m; x.style.background = t === 'success' ? 'var(--success)' : 'var(--danger)';
-        x.style.display = 'block'; setTimeout(() => x.style.display = 'none', 3000);
+        x.innerHTML = `<i class="fas ${t === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ` + m; 
+        x.style.background = t === 'success' ? 'var(--success)' : 'var(--danger)';
+        x.style.display = 'block'; setTimeout(() => x.style.display = 'none', 3500);
     }
 </script>
 </body>
