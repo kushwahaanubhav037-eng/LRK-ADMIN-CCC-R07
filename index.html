@@ -55,7 +55,7 @@
 
         /* Top Bar Indicators */
         .top-indicators { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
-        .ind-card { background: #fff; padding: 15px 25px; border-radius: 16px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); min-width: 200px; flex-1; border-bottom: 4px solid var(--edu-blue); }
+        .ind-card { background: #fff; padding: 15px 25px; border-radius: 16px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); min-width: 200px; flex: 1; border-bottom: 4px solid var(--edu-blue); }
         .ind-card.dup { border-color: var(--warning); }
         .ind-card i { font-size: 1.8rem; color: var(--edu-blue); }
         .ind-card.dup i { color: var(--warning); }
@@ -125,6 +125,45 @@
         .bulk-card i { font-size: 1.5rem; color: var(--text-muted); margin-bottom: 5px; }
 
         #toast { position: fixed; bottom: 30px; right: 30px; padding: 16px 30px; border-radius: 12px; color: white; display: none; z-index: 10000; box-shadow: 0 15px 30px rgba(0,0,0,0.15); font-weight: 600; font-size: 14px; }
+
+        /* Professional R07 Neon Glowing Loader Styling */
+        .r07-loader {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .r07-glow-text {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--edu-blue);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(99, 102, 241, 0.2), 0 0 20px rgba(99, 102, 241, 0.4);
+            animation: r07Pulse 1.5s infinite ease-in-out;
+        }
+        .r07-sub-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        @keyframes r07Pulse {
+            0%, 100% {
+                transform: scale(1);
+                color: var(--edu-blue);
+                text-shadow: 0 0 10px rgba(99, 102, 241, 0.3), 0 0 20px rgba(99, 102, 241, 0.5);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.1);
+                color: #4f46e5;
+                text-shadow: 0 0 20px rgba(79, 70, 229, 0.6), 0 0 40px rgba(79, 70, 229, 0.9);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -244,7 +283,14 @@
                             </tr>
                         </thead>
                         <tbody id="adminTable">
-                            <tr><td colspan="4" style="text-align:center; padding:60px; color:var(--text-muted); font-weight:600;"><i class="fas fa-circle-notch fa-spin"></i> Initializing Cloud Nodes Stream...</td></tr>
+                            <tr>
+                                <td colspan="4" style="text-align:center; padding:60px;">
+                                    <div class="r07-loader">
+                                        <div class="r07-glow-text">R07</div>
+                                        <div class="r07-sub-text">Initializing Cloud Nodes...</div>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -285,6 +331,17 @@
 
     // 2. Load and De-duplicate Cloud Data
     async function loadData() {
+        // Set R07 Neon Glow loader while fetching data
+        document.getElementById('adminTable').innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align:center; padding:60px;">
+                    <div class="r07-loader">
+                        <div class="r07-glow-text">R07</div>
+                        <div class="r07-sub-text">Syncing Live Database Hub...</div>
+                    </div>
+                </td>
+            </tr>
+        `;
         try {
             const res = await fetch(`${SCRIPT_URL}?_cb=${Date.now()}`);
             const db = await res.json();
@@ -400,6 +457,7 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // Question Add Engine Fixed (IDs properly synced to opA, opB, opC, opD)
     async function saveAction(mode) {
         const id = mode === 'update' ? document.getElementById('editId').value : Date.now().toString();
         const q = document.getElementById('qTxt').value.trim();
@@ -414,7 +472,16 @@
         const payload = {
             type: 'questions',
             action: 'save',
-            row: [id, q, document.getElementById('opA').value, document.getElementById('opB').value, document.getElementById('opC').value, document.getElementById('opD').value, document.getElementById('correctAns').value, document.getElementById('qLevel').value]
+            row: [
+                id, 
+                q, 
+                document.getElementById('opA').value, 
+                document.getElementById('opB').value, 
+                document.getElementById('opC').value, 
+                document.getElementById('opD').value, 
+                document.getElementById('correctAns').value, 
+                document.getElementById('qLevel').value
+            ]
         };
 
         await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
@@ -453,7 +520,6 @@
                         }
                     }
                 } else {
-                    // Quick Row Processing Fallback CSV
                     const rows = text.split('\n').slice(1);
                     showToast(`Injecting CSV packets data...`, "success");
                     for(let row of rows) {
@@ -494,7 +560,7 @@
 
     function showToast(m, t) {
         const x = document.getElementById('toast');
-        x.innerHTML = `<i class="fas ${t === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ` + m; 
+        x.innerHTML = `<i class="fas ${t === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}\"></i> ` + m; 
         x.style.background = t === 'success' ? 'var(--success)' : 'var(--danger)';
         x.style.display = 'block'; setTimeout(() => x.style.display = 'none', 3500);
     }
